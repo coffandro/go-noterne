@@ -17,7 +17,6 @@ const wasmBinary = await fetch("./rl/raylib.wasm")
 canvas.addEventListener('contextmenu', e => e.preventDefault())
 
 globalThis.onRuntimeInitialized = function onRuntimeInitialized() {
-  console.log("HI!");
   function resizeCanvasAndClient() {
     var width = window.innerWidth | 0;
     var height = window.innerHeight | 0;
@@ -27,13 +26,10 @@ globalThis.onRuntimeInitialized = function onRuntimeInitialized() {
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
 
-    console.log(width, height);
-
     if (typeof goSetDimensions === 'function') {
       goSetDimensions(width, height);
     }
   }
-
 
   window.addEventListener('resize', resizeCanvasAndClient);
   resizeCanvasAndClient();
