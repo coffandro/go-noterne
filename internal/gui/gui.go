@@ -1,58 +1,49 @@
 package gui
 
+// Mostly stolen from https://github.com/raysan5/raygui/
+// Currently we dont support styling...
+// We assume all no borders, backgrounds are raywhite and text is left 16 sized
+
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-func CutLeft(rect *rl.Rectangle, n float32) rl.Rectangle {
-	var result rl.Rectangle = rl.Rectangle{
-		X:      rect.X,
-		Y:      rect.Y,
-		Width:  n,
-		Height: rect.Height,
-	}
-	rect.X += n
-	rect.Width = max(rect.Width-n, 0)
-	return result
+type GuiState int64
+
+const (
+	STATE_NORMAL GuiState = iota
+	STATE_FOCUSED
+	STATE_PRESSED
+	STATE_DISABLED
+)
+
+var guiState GuiState = STATE_NORMAL
+
+func PosRectColliding(pos rl.Vector2, rect rl.Rectangle) bool {
+	return pos.X >= rect.X && pos.X < rect.X+rect.Width &&
+		pos.Y >= rect.Y && rect.Y < rect.Y+rect.Height
 }
 
-func CutRight(rect *rl.Rectangle, n float32) rl.Rectangle {
-	var result rl.Rectangle = rl.Rectangle{
-		X:      rect.X + rect.Width - n,
-		Y:      rect.Y,
-		Width:  n,
-		Height: rect.Height,
-	}
-	rect.Width = max(rect.Width-n, 0)
-	return result
-}
+func Button(bounds rl.Rectangle, label string) bool {
+	var result bool = false
+	var state GuiState = guiState
 
-func CutTop(rect *rl.Rectangle, n float32) rl.Rectangle {
-	var result rl.Rectangle = rl.Rectangle{
-		X:      rect.X,
-		Y:      rect.Y,
-		Width:  rect.Width,
-		Height: n,
-	}
-	rect.Y += n
-	rect.Height = max(rect.Height-n, 0)
-	return result
-}
+	if state != STATE_DISABLED {
+		var mousePoint rl.Vector2 = rl.GetMousePosition()
 
-func CutBottom(rect *rl.Rectangle, n float32) rl.Rectangle {
-	var result rl.Rectangle = rl.Rectangle{
-		X:      rect.X,
-		Y:      rect.Y + rect.Height - n,
-		Width:  rect.Width,
-		Height: n,
-	}
-	rect.Height = max(rect.Height-n, 0)
-	return result
-}
+		if PosRectColliding(mousePoint, bounds) {
+			if rl.IsMouseButtonDown(rl.MouseButtonLeft) {
+				state = STATE_PRESSED
+			} else {
+				state = STATE_FOCUSED
+			}
 
-func Shrink(rect rl.Rectangle, n float32) rl.Rectangle {
-	return rl.Rectangle{
-		X:      rect.X + n,
-		Y:      rect.Y + n,
-		Width:  rect.Width - n*2,
-		Height: rect.Height - n*2,
+			if rl.IsMouseButtonReleased(rl.MouseButtonLeft) {
+				result = true
+			}
+		}
 	}
+
+	rl.DrawRectangleRec(bounds, rl.RayWhite)
+	rl.DrawText(label, bounds.ToInt32().X, bounds.ToInt32().Y, 16, rl.Black)
+
+	return result
 }

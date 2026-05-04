@@ -13,16 +13,16 @@ func main() {
 
 	rl.SetTargetFPS(30)
 
-	client.Init()
+	var clientState = client.Init()
 
 	for !rl.WindowShouldClose() {
-		var drawRect rl.Rectangle = rl.Rectangle{
+		clientState.DrawRect = rl.Rectangle{
 			X:      0,
 			Y:      0,
 			Width:  float32(rl.GetScreenWidth()),
 			Height: float32(rl.GetScreenHeight()),
 		}
 
-		client.Update(&drawRect)
+		client.Update(&clientState)
 	}
 }

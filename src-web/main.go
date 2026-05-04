@@ -26,7 +26,7 @@ func main() {
 
 	fmt.Println("Starting client")
 
-	client.Init()
+	var clientState = client.Init()
 
 	// If a global JS function named "onRuntimeInitialized" exists, call it.
 	if fn := js.Global().Get("onRuntimeInitialized"); fn.Type() == js.TypeFunction {
@@ -36,14 +36,14 @@ func main() {
 	}
 
 	var update = func() {
-		var drawRect rl.Rectangle = rl.Rectangle{
+		clientState.DrawRect = rl.Rectangle{
 			X:      0,
 			Y:      0,
 			Width:  float32(rl.GetScreenWidth()),
 			Height: float32(rl.GetScreenHeight()),
 		}
 
-		client.Update(&drawRect)
+		client.Update(&clientState)
 	}
 
 	rl.SetMainLoop(update)
