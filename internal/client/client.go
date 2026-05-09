@@ -29,11 +29,97 @@ func Update(state *ClientState) {
 	var top = lay.CutTop(&state.DrawRect, 48)
 	rl.DrawRectangleRec(top, rl.Green)
 
-	if gui.Button(lay.CutLeft(&top, 48), "Wow!") {
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.START,
+		YAlignment: gui.START,
+	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
-	rl.DrawRectangleRec(lay.CutLeft(&state.DrawRect, 48*2), rl.Black)
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.MIDDLE,
+		YAlignment: gui.START,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.END,
+		YAlignment: gui.START,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.START,
+		YAlignment: gui.MIDDLE,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.MIDDLE,
+		YAlignment: gui.MIDDLE,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.END,
+		YAlignment: gui.MIDDLE,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.START,
+		YAlignment: gui.END,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.MIDDLE,
+		YAlignment: gui.END,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	if gui.Button(gui.ButtonParams{
+		Bounds:     lay.CutLeft(&top, 48),
+		Label:      "Hello!",
+		XAlignment: gui.END,
+		YAlignment: gui.END,
+	}) {
+		state.Messages = append(state.Messages, "HI!")
+	}
+	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
+
+	gui.DrawRect(lay.CutLeft(&state.DrawRect, 48), rl.Black)
 
 	lay.Shrink(&state.DrawRect, 8)
 

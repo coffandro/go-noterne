@@ -1,6 +1,6 @@
 module noterne/src
 
-go 1.25.9
+go 1.26.2
 
 require github.com/gen2brain/raylib-go/raylib v0.55.1
 
