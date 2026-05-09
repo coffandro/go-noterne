@@ -24,7 +24,7 @@ func Init() ClientState {
 func Update(state *ClientState) {
 	rl.BeginDrawing()
 
-	rl.ClearBackground(rl.RayWhite)
+	rl.ClearBackground(rl.DarkGray)
 
 	var top = lay.CutTop(&state.DrawRect, 48)
 	rl.DrawRectangleRec(top, rl.Green)
@@ -37,7 +37,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -47,7 +46,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -57,7 +55,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -67,7 +64,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -77,7 +73,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -87,7 +82,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -97,7 +91,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -107,7 +100,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	if gui.Button(gui.ButtonParams{
 		Bounds:     lay.CutLeft(&top, 48),
@@ -117,7 +109,6 @@ func Update(state *ClientState) {
 	}) {
 		state.Messages = append(state.Messages, "HI!")
 	}
-	gui.DrawRect(lay.CutLeft(&top, 1), rl.Black)
 
 	gui.DrawRect(lay.CutLeft(&state.DrawRect, 48), rl.Black)
 

@@ -26,8 +26,11 @@ const (
 )
 
 var (
-	BG = rl.White
-	FG = rl.Black
+	BG     = rl.White
+	FG     = rl.Black
+	BORDER = rl.Gray
+	HOVER  = rl.RayWhite
+	ACTIVE = rl.Gray
 )
 
 var guiState GuiState = STATE_NORMAL
@@ -76,25 +79,43 @@ func DrawAlignedLabelRect(
 	XAlignment Alignment,
 	YAlignment Alignment,
 	FontSize int32,
+	Padding int32,
 ) {
 	var yPos float32 = 0
 
 	if YAlignment == START {
-		yPos = bounds.Y
+		yPos = bounds.Y + float32(Padding)
 	} else if YAlignment == MIDDLE {
 		yPos = bounds.Y + bounds.Height/2 - float32(FontSize)/2
 	} else if YAlignment == END {
-		yPos = bounds.Y + bounds.Height - float32(FontSize)
+		yPos = bounds.Y + bounds.Height - float32(FontSize) - float32(Padding)
 	}
 
 	var textSize int32 = GetTextWidth(label, float32(FontSize))
 
 	if XAlignment == START {
-		rl.DrawText(label, bounds.ToInt32().X, int32(yPos), FontSize, FG)
+		rl.DrawText(
+			label,
+			bounds.ToInt32().X+Padding,
+			int32(yPos),
+			FontSize,
+			FG,
+		)
 	} else if XAlignment == MIDDLE {
-		rl.DrawText(label, bounds.ToInt32().X+bounds.ToInt32().Width/2-textSize/2, int32(yPos), FontSize, FG)
+		rl.DrawText(
+			label,
+			bounds.ToInt32().X+bounds.ToInt32().Width/2-textSize/2,
+			int32(yPos),
+			FontSize, FG,
+		)
 	} else if XAlignment == END {
-		rl.DrawText(label, bounds.ToInt32().X+bounds.ToInt32().Width-textSize, int32(yPos), FontSize, FG)
+		rl.DrawText(
+			label,
+			bounds.ToInt32().X+bounds.ToInt32().Width-textSize-Padding,
+			int32(yPos),
+			FontSize,
+			FG,
+		)
 	}
 }
 
@@ -108,12 +129,130 @@ func DrawRect(bounds rl.Rectangle, color ...rl.Color) {
 	rl.DrawRectangleRec(bounds, col)
 }
 
+type BorderParams struct {
+	BorderLeft   int32
+	BorderRight  int32
+	BorderTop    int32
+	BorderBottom int32
+	Border       int32
+}
+
+func EnsureBorderParams(params *BorderParams) {
+	if params.Border == 0 {
+		params.Border = 1
+	}
+	if params.BorderLeft == 0 {
+		params.BorderLeft = params.Border
+	}
+	if params.BorderRight == 0 {
+		params.BorderRight = params.Border
+	}
+	if params.BorderTop == 0 {
+		params.BorderTop = params.Border
+	}
+	if params.BorderBottom == 0 {
+		params.BorderBottom = params.Border
+	}
+}
+
+func EnsureRegularBorderParams(params *BorderParams) {
+	var bottomZero bool = params.BorderBottom == 0
+
+	EnsureBorderParams(params)
+
+	if bottomZero {
+		// Our default bottom is 3
+		params.BorderBottom = 3
+	}
+}
+
+func EnsureHoverBorderParams(params *BorderParams) {
+	var bottomZero bool = params.BorderBottom == 0
+
+	EnsureBorderParams(params)
+
+	if bottomZero {
+		// Our default bottom is 2
+		params.BorderBottom = 2
+	}
+}
+
+func EnsureActiveBorderParams(params *BorderParams) {
+	var bottomZero bool = params.BorderBottom == 0
+
+	EnsureBorderParams(params)
+
+	if bottomZero {
+		// Our default bottom is 1
+		params.BorderBottom = 1
+	}
+}
+
+func GetBiggestBorder(params BorderParams) int32 {
+	var ret int32 = params.Border
+
+	if params.BorderLeft > params.Border {
+		ret = params.BorderLeft
+	} else if params.BorderRight > params.Border {
+		ret = params.BorderRight
+	} else if params.BorderTop > params.Border {
+		ret = params.BorderTop
+	} else if params.BorderBottom > params.Border {
+		ret = params.BorderBottom
+	}
+
+	return ret
+}
+
+func DrawBorders(bounds rl.Rectangle, borders BorderParams) {
+	if borders.BorderLeft != 0 {
+		rl.DrawRectangle(
+			bounds.ToInt32().X,
+			bounds.ToInt32().Y,
+			borders.BorderLeft,
+			bounds.ToInt32().Height,
+			BORDER,
+		)
+	}
+	if borders.BorderRight != 0 {
+		rl.DrawRectangle(
+			bounds.ToInt32().X+bounds.ToInt32().Width-borders.BorderRight,
+			bounds.ToInt32().Y,
+			borders.BorderRight,
+			bounds.ToInt32().Height,
+			BORDER,
+		)
+	}
+	if borders.BorderTop != 0 {
+		rl.DrawRectangle(
+			bounds.ToInt32().X,
+			bounds.ToInt32().Y,
+			bounds.ToInt32().Width,
+			borders.BorderTop,
+			BORDER,
+		)
+	}
+	if borders.BorderBottom != 0 {
+		rl.DrawRectangle(
+			bounds.ToInt32().X,
+			bounds.ToInt32().Y+bounds.ToInt32().Height-borders.BorderBottom,
+			bounds.ToInt32().Width,
+			borders.BorderBottom,
+			BORDER,
+		)
+	}
+}
+
 type ButtonParams struct {
 	XAlignment Alignment
 	YAlignment Alignment
 	Bounds     rl.Rectangle
 	Label      string
 	FontSize   int32
+
+	Borders       BorderParams
+	HoverBorders  BorderParams
+	ActiveBorders BorderParams
 }
 
 func EnsureButtonParams(params *ButtonParams) {
@@ -121,6 +260,10 @@ func EnsureButtonParams(params *ButtonParams) {
 	params.YAlignment = params.YAlignment
 	params.Bounds = params.Bounds
 	params.Label = params.Label
+
+	EnsureRegularBorderParams(&params.Borders)
+	EnsureHoverBorderParams(&params.HoverBorders)
+	EnsureActiveBorderParams(&params.ActiveBorders)
 
 	if params.FontSize == 0 {
 		params.FontSize = 8
@@ -150,7 +293,54 @@ func Button(params ButtonParams) bool {
 	}
 
 	DrawRect(params.Bounds)
-	DrawAlignedLabelRect(params.Label, params.Bounds, params.XAlignment, params.YAlignment, params.FontSize)
+
+	var biggestBorder int32 = GetBiggestBorder(params.Borders)
+
+	switch state {
+	case STATE_NORMAL:
+		DrawBorders(params.Bounds, params.Borders)
+
+		DrawAlignedLabelRect(
+			params.Label,
+			params.Bounds,
+			params.XAlignment,
+			params.YAlignment,
+			params.FontSize,
+			biggestBorder,
+		)
+	case STATE_FOCUSED:
+		DrawBorders(params.Bounds, params.HoverBorders)
+
+		DrawAlignedLabelRect(
+			params.Label,
+			rl.Rectangle{
+				X:      params.Bounds.X,
+				Y:      params.Bounds.Y + (float32(biggestBorder) - float32(params.HoverBorders.BorderBottom)),
+				Width:  params.Bounds.Width,
+				Height: params.Bounds.Height,
+			},
+			params.XAlignment,
+			params.YAlignment,
+			params.FontSize,
+			biggestBorder,
+		)
+	case STATE_PRESSED:
+		DrawBorders(params.Bounds, params.ActiveBorders)
+
+		DrawAlignedLabelRect(
+			params.Label,
+			rl.Rectangle{
+				X:      params.Bounds.X,
+				Y:      params.Bounds.Y + (float32(biggestBorder) - float32(params.ActiveBorders.BorderBottom)),
+				Width:  params.Bounds.Width,
+				Height: params.Bounds.Height,
+			},
+			params.XAlignment,
+			params.YAlignment,
+			params.FontSize,
+			biggestBorder,
+		)
+	}
 
 	return result
 }
